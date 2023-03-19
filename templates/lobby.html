@@ -2,15 +2,15 @@
 <html>
     <head>
         <title>
-            {{ lobby.id }}
+            {{ lobby.id }}|{{ player.id }}
         </title>
-        <script src="{{url_for('static', filename='lobby_join.js')}}"></script>
     </head>
     <body>
+        <div id="player-id" hidden>{{ player.id }}</div> <!--get current player id so we know what to send to the server-->
         <div>
             <h1>
-                join {{ lobby.id }} 
-                you are {{player.id}}
+                join lobby with id : {{ lobby.id }} <br>
+                you are player with id : {{player.id}}
             </h1>
         </div>
         <div>
@@ -20,5 +20,6 @@
             </li>
             {% endfor %}
         </div>
+        <script src="{{url_for('static', filename='lobby.js')}}"></script>
     </body>
 </html>
