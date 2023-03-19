@@ -1,10 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_wtf import FlaskForm
+from flask_socketio import SocketIO, emit
 from wtforms import StringField, SubmitField
 from gamelogic import Player, Lobby
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
+socketio = SocketIO(app)
 
 @app.route('/', methods = ['POST', 'GET'])
 @app.route('/index', methods = ['POST', 'GET'])
@@ -70,9 +72,9 @@ def lobby(lobby, player): #this has lobby id
         lobby = Lobby.all_lobbies[lobby]
 
         player = lobby.get_player(player)
-        
+
         return render_template('lobby.html', lobby=lobby, player=player)
     
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    socketio.run(app)
