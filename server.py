@@ -31,8 +31,11 @@ def index():
         if 'id' not in form: # check if this is create or join.
 
             #create
-            lobby = Lobby([Player(form['username'], player_ip)])
-            return redirect(url_for('lobby', lobby=lobby.id))
+            player_admin = Player(form['username'], player_ip, admin=True)
+
+            lobby = Lobby([player_admin])
+
+            return redirect(url_for('lobby', lobby=lobby.id, player= player_admin.id))
         
         else:
 
@@ -45,17 +48,18 @@ def index():
 
                 lobby = Lobby.all_lobbies[form['id']]
 
-                if player_ip not in lobby.get_player_ips(): # might want to comment this line if you want to test locally
-                    lobby.add_player(form['username'], player_ip)
+                new_player = Player(form['username'], player_ip)
+
+                lobby.add_player(new_player)
                 
-                return redirect(url_for('lobby', lobby=lobby.id))
+                return redirect(url_for('lobby', lobby=lobby.id, player = new_player.id))
     else:
 
         return render_template('index.html', create_form = create_form, join_form = join_form)
 
 
-@app.route('/<lobby>')
-def lobby(lobby): #this has lobby id
+@app.route('/<lobby>/<player>')
+def lobby(lobby, player): #this has lobby id
 
     if lobby not in Lobby.all_lobbies or request.remote_addr not in Lobby.all_lobbies[lobby].get_player_ips(): # we do this second condition because people could enter the lobby by route alone
 
@@ -64,7 +68,10 @@ def lobby(lobby): #this has lobby id
     else:
 
         lobby = Lobby.all_lobbies[lobby]
-        return render_template('lobby.html', lobby=lobby)
+
+        player = lobby.get_player(player)
+        
+        return render_template('lobby.html', lobby=lobby, player=player)
     
 
 if __name__ == "__main__":

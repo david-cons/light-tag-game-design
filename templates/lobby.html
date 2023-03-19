@@ -9,12 +9,13 @@
         <div>
             <h1>
                 join {{ lobby.id }} 
+                you are {{player.id}}
             </h1>
         </div>
         <div>
             {% for i in lobby.players %}
             <li>
-                {{i.name}} {{i.ip}}
+                {{i.name}} id:{{i.id}} ip:{{i.ip}}
             </li>
             {% endfor %}
         </div>
