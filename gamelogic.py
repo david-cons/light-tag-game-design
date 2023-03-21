@@ -2,7 +2,8 @@ from random import randint
 import threading
 import time
 
-from flask_socketio import emit, start_background_task# in the game loop we need to send messages to the players
+from flask import copy_current_request_context
+from flask_socketio import SocketIO# in the game loop we need to send messages to the players
 
 class Lobby:
     
@@ -47,9 +48,8 @@ class Lobby:
         
         return result[0]
 
-    
-    def game(self, start_game_wait_time, time_out_time ,game_mode = None): #timing is done in seconds
-        
+    def game(self, socketio, start_game_wait_time, time_out_time ,game_mode = None): #timing is done in seconds
+
         time.sleep(start_game_wait_time) # start of the game time until everybody is ready
         #print the amount of time people have to get ready for 
 
@@ -62,6 +62,9 @@ class Lobby:
             everybody = {}
             for i in self.get_player_ids():
                 everybody[i] = randint(0 , 4)
+
+            
+            socketio.emit('event', everybody, to=self.id)
 
             time.sleep(time_out_time)
 

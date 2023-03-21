@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, redirect, url_for
 from flask_wtf import FlaskForm
 from flask_socketio import SocketIO, emit, join_room, leave_room
 from wtforms import StringField, SubmitField
+from threading import Thread
 from gamelogic import Player, Lobby
 
 app = Flask(__name__)
@@ -72,6 +73,10 @@ def lobby(lobby, player): #this has lobby id
 
         lobby = Lobby.all_lobbies[lobby]
 
+        if len(lobby.players) == 1:
+            thread = Thread(target=lobby.game, args=(socketio,10,10,None))
+            thread.start()
+
         player = lobby.get_player_by_id(player)
 
         return render_template('lobby.html', lobby=lobby, player=player)
@@ -90,10 +95,6 @@ def on_join(data):
 def on_disconnect():
     pass # need to add code for leaving the room also
 
-
-
-
-    
 
 if __name__ == "__main__":
     socketio.run(app)
