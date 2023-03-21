@@ -1,10 +1,14 @@
 from random import randint
+import threading
+import time
+
+from flask_socketio import emit, start_background_task# in the game loop we need to send messages to the players
 
 class Lobby:
     
     all_lobbies = {}
 
-    def __init__(self, players = None):
+    def __init__(self,  players = None):
         trial = str(randint(0,1000))
         while trial in Lobby.all_lobbies:
             trial = str(randint(0,1000))
@@ -26,11 +30,15 @@ class Lobby:
 
         return map(lambda x: x.ip, self.players)
     
+    def get_player_ids(self):
+
+        return map(lambda x: x.id, self.players)
+    
     def add_player(self, player):
 
         self.players.append(player)
 
-    def get_player(self, player_id):
+    def get_player_by_id(self, player_id):
         result = [i for i in self.players if i.id == player_id]
 
         if len(result) == 0:
@@ -38,6 +46,28 @@ class Lobby:
             return None
         
         return result[0]
+
+    
+    def game(self, start_game_wait_time, time_out_time ,game_mode = None): #timing is done in seconds
+        
+        time.sleep(start_game_wait_time) # start of the game time until everybody is ready
+        #print the amount of time people have to get ready for 
+
+        print('everybody in lobby: ' + str(self.get_id()) + ' has to wait ' + str(start_game_wait_time) + ' seconds')
+
+        while True: #game_loop
+            print('everybody in lobby: ' + str(self.get_id()) + ' has to wait ' + str(time_out_time) + ' seconds')
+            #print everybody's colors 
+
+            everybody = {}
+            for i in self.get_player_ids():
+                everybody[i] = randint(0 , 4)
+
+            time.sleep(time_out_time)
+
+            
+
+
 
 class Player:
 
@@ -48,6 +78,8 @@ class Player:
         self.ip = ip
 
         self.id = self.name + '-' + str(randint(0, 1000))
+
+        self.sid = None #socket session ID must be actualized when user gets connected via socket
 
         if colors == None:
 

@@ -1,11 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for
 from flask_wtf import FlaskForm
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO, emit, join_room, leave_room
 from wtforms import StringField, SubmitField
 from gamelogic import Player, Lobby
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
+app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 socketio = SocketIO(app)
 
 @app.route('/', methods = ['POST', 'GET'])
@@ -71,9 +72,27 @@ def lobby(lobby, player): #this has lobby id
 
         lobby = Lobby.all_lobbies[lobby]
 
-        player = lobby.get_player(player)
+        player = lobby.get_player_by_id(player)
 
         return render_template('lobby.html', lobby=lobby, player=player)
+    
+@socketio.on('connect')
+def on_connect():
+    print('A client connected')
+
+@socketio.on('join')
+def on_join(data):
+    print('player: ' + data['player_id'] + ' from lobby: ' + data['lobby'] + ' is online and was assigned to socket room')
+    
+    join_room(data['lobby']) # we already know this has to exist
+
+@socketio.on('disconnect')
+def on_disconnect():
+    pass # need to add code for leaving the room also
+
+
+
+
     
 
 if __name__ == "__main__":
