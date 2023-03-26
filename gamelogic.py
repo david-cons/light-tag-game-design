@@ -53,28 +53,29 @@ class Lobby:
         time.sleep(start_game_wait_time) # start of the game time until everybody is ready
         #print the amount of time people have to get ready for 
 
-        print('everybody in lobby: ' + str(self.get_id()) + ' has to wait ' + str(start_game_wait_time) + ' seconds')
-
         while True: #game_loop
-            print('everybody in lobby: ' + str(self.get_id()) + ' has to wait ' + str(time_out_time) + ' seconds')
             #print everybody's colors 
 
-            everybody = {}
-            for i in self.get_player_ids():
-                everybody[i] = randint(0 , 4)
+            for i in self.players:
+                i.color = 'blue' if randint(0,1) == 1 else 'red'
 
-            
-            socketio.emit('event', everybody, to=self.id)
+            self.send_current_lobby_state(socketio=socketio)
 
             time.sleep(time_out_time)
 
-            
+    def send_current_lobby_state(self,socketio):
+           everybody = {}
+
+           for i in self.players:
+               everybody[i.id] = i.color
+
+           socketio.emit('update_lobby', {'players' : everybody}, to=self.id)
 
 
 
 class Player:
 
-    def __init__(self, name, ip, admin=False, colors=None):
+    def __init__(self, name, ip):
 
         self.name = name
         
@@ -83,14 +84,6 @@ class Player:
         self.id = self.name + '-' + str(randint(0, 1000))
 
         self.sid = None #socket session ID must be actualized when user gets connected via socket
-
-        if colors == None:
-
-            self.colors = ['Red', 'Blue']
-
-        else: 
-
-            self.colors = colors
 
         self.color = None #Timeouted
     

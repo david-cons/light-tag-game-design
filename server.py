@@ -35,7 +35,7 @@ def index():
         if 'id' not in form: # check if this is create or join.
 
             #create
-            player_admin = Player(form['username'], player_ip, admin=True)
+            player_admin = Player(form['username'], player_ip)
 
             lobby = Lobby([player_admin])
 
@@ -74,7 +74,7 @@ def lobby(lobby, player): #this has lobby id
         lobby = Lobby.all_lobbies[lobby]
 
         if len(lobby.players) == 1:
-            thread = Thread(target=lobby.game, args=(socketio,10,10,None))
+            thread = Thread(target=lobby.game, args=(socketio,10,60,None))
             thread.start()
 
         player = lobby.get_player_by_id(player)
@@ -89,7 +89,30 @@ def on_connect():
 def on_join(data):
     print('player: ' + data['player_id'] + ' from lobby: ' + data['lobby'] + ' is online and was assigned to socket room')
     
+    lobby = Lobby.all_lobbies[data['lobby']]
+    everyone = {}
+
     join_room(data['lobby']) # we already know this has to exist
+
+    for i in lobby.players:
+        everyone[i.id] = i.color
+
+    emit('update_lobby', {'players' : everyone} , to=lobby.id)
+
+
+@socketio.on('time-out')
+def on_timeout(data):
+    print('player: ' + data['player_id'] + ' from lobby '+ data['lobby'] + ' got time-outed')
+    lobby = Lobby.all_lobbies[data['lobby']]
+
+    lobby.get_player_by_id(data['player_id']).color = None
+    
+    everyone = {}
+
+    for i in lobby.players:
+        everyone[i.id] = i.color
+
+    emit('update_lobby', {'players' : everyone }, to=lobby.id) 
 
 @socketio.on('disconnect')
 def on_disconnect():
