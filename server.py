@@ -8,7 +8,7 @@ from gamelogic import Player, Lobby
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
-socketio = SocketIO(app)
+socketio = SocketIO(app, async_mode='threading')
 
 @app.route('/', methods = ['POST', 'GET'])
 @app.route('/index', methods = ['POST', 'GET'])
@@ -74,8 +74,9 @@ def lobby(lobby, player): #this has lobby id
         lobby = Lobby.all_lobbies[lobby]
 
         if len(lobby.players) == 1:
-            thread = Thread(target=lobby.game, args=(socketio,10,60,None))
+            thread = Thread(target=lobby.game, args=(socketio,10,20,None))
             thread.start()
+            
 
         player = lobby.get_player_by_id(player)
 
@@ -98,6 +99,7 @@ def on_join(data):
     for i in lobby.players:
         everyone[i.id] = i.color
 
+    print(everyone)
     emit('update_lobby', {'players' : everyone} , to=lobby.id)
 
 
@@ -113,6 +115,7 @@ def on_timeout(data):
     for i in lobby.players:
         everyone[i.id] = i.color
 
+    print(everyone)
     emit('update_lobby', {'players' : everyone }, to=lobby.id) 
 
 @socketio.on('disconnect')

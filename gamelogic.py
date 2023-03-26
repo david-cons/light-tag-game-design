@@ -50,7 +50,7 @@ class Lobby:
 
     def game(self, socketio, start_game_wait_time, time_out_time ,game_mode = None): #timing is done in seconds
 
-        time.sleep(start_game_wait_time) # start of the game time until everybody is ready
+        socketio.sleep(start_game_wait_time) # start of the game time until everybody is ready
         #print the amount of time people have to get ready for 
 
         while True: #game_loop
@@ -61,7 +61,7 @@ class Lobby:
 
             self.send_current_lobby_state(socketio=socketio)
 
-            time.sleep(time_out_time)
+            socketio.sleep(time_out_time)
 
     def send_current_lobby_state(self,socketio):
            everybody = {}
