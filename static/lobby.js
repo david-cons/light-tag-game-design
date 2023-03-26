@@ -45,7 +45,7 @@ function display_players(players)
     for(const [id, color] of Object.entries(players))
     {
         let li = document.createElement('li');
-        li.textContent = id + ' ' + color;
+        li.textContent = id + ' ' + (color === null? 'time-outed' : color);
 
         ul.appendChild(li);
     }
@@ -63,4 +63,3 @@ function change_background_color(color)
 {
     document.body.style.backgroundColor = color === null ? 'yellow' : color;
 }
-
