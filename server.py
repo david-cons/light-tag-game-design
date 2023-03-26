@@ -90,9 +90,10 @@ def on_join(data):
     print('player: ' + data['player_id'] + ' from lobby: ' + data['lobby'] + ' is online and was assigned to socket room')
     
     lobby = Lobby.all_lobbies[data['lobby']]
-    everyone = {}
 
     join_room(data['lobby']) # we already know this has to exist
+
+    everyone = {}
 
     for i in lobby.players:
         everyone[i.id] = i.color
