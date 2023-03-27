@@ -2,13 +2,16 @@ from flask import Flask, render_template, request, redirect, url_for
 from flask_wtf import FlaskForm
 from flask_socketio import SocketIO, emit, join_room, leave_room
 from wtforms import StringField, SubmitField
-from threading import Thread
 from gamelogic import Player, Lobby
+from gevent import monkey
+
+monkey.patch_all()
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
-socketio = SocketIO(app, async_mode='threading')
+socketio = SocketIO(app)
+
 
 @app.route('/', methods = ['POST', 'GET'])
 @app.route('/index', methods = ['POST', 'GET'])
@@ -74,8 +77,8 @@ def lobby(lobby, player): #this has lobby id
         lobby = Lobby.all_lobbies[lobby]
 
         if len(lobby.players) == 1:
-            socketio.start_background_task(target=lobby.game, args=(socketio,10,20,None))
-            
+            socketio.start_background_task(lobby.game, socketio,10,20,None)
+
         player = lobby.get_player_by_id(player)
 
         return render_template('lobby.html', lobby=lobby, player=player)
@@ -137,7 +140,6 @@ def on_leave(data):
 @socketio.on('disconnect')
 def on_disconnect():
     print('player has left')
-
 
 if __name__ == "__main__":
     socketio.run(app)

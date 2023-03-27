@@ -1,7 +1,8 @@
 from random import randint
 import threading
 import time
-from server import send_current_lobby_state
+from flask import copy_current_request_context
+from flask_socketio import SocketIO# in the game loop we need to send messages to the players
 
 class Lobby:
     
@@ -49,23 +50,35 @@ class Lobby:
     def remove_player(self, player):
         self.players.remove(player)
 
-    def game(self, start_game_wait_time, time_out_time,game_mode = None): #timing is done in seconds
-        
-        time.sleep(start_game_wait_time) # start of the game time until everybody is ready
+    def game(self, socketio, start_game_wait_time, time_out_time,game_mode = None): #timing is done in seconds
+        print(str(self.id) + ' game is running')
+        socketio.sleep(start_game_wait_time) # start of the game time until everybody is ready
         #print the amount of time people have to get ready for 
 
         while True: #game_loop
             #print everybody's colors 
 
             if len(self.players) == 0:
+                print(str(self.id) + ' game is closed')
                 return # end thread when there are no more players in the game
         
             for i in self.players:
                 i.color = 'blue' if randint(0,1) == 1 else 'red'
 
-            send_current_lobby_state(self)
+            self.send_current_lobby_state(socketio=socketio)
 
-            time.sleep(time_out_time)
+            socketio.sleep(time_out_time)
+
+            
+
+    def send_current_lobby_state(self,socketio):
+           everybody = {}
+
+           for i in self.players:
+               everybody[i.id] = i.color
+
+           socketio.emit('update_lobby', {'players' : everybody}, to=self.id)
+
 
 
 class Player:
