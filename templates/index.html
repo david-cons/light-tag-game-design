@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            LIGHT TAG
+        </title>
+    </head>
+    <body>
+        <div>
+            <h2>Create Lobby</h2>
+            <form action="#" method="post">
+                <p>
+                    {{create_form.username.label}} <br>
+                    {{create_form.username(size=20)}}
+                </p>
+                <p>
+                    {{create_form.submit()}}
+                </p>
+            </form>
+            <br>
+            <h2>Join Lobby</h2>
+            <form action="#" method="post">
+                <p>
+                    {{join_form.username.label}} <br>
+                    {{join_form.username(size=20)}}
+                </p>
+                <p>
+                    {{join_form.id.label}} <br>
+                    {{join_form.id(size=20)}}
+                </p>
+                <p>
+                    {{join_form.submit()}}
+                </p>
+            </form>
+        </div>
+    </body>
+</html>

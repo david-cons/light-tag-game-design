@@ -1,0 +1,23 @@
+Progression: 
+
+1. logging in 
+
+[enter website] -> [create lobby]/[join lobby]
+[create lobby]  -> [choose game mode | create lobby] -> [choose settings] -> [join as player]
+[join lobby]    -> [join as player]
+
+-------------------------------------------
+
+2. game 
+
+[{x} second countdown ends] -> [assign colors from backend appropriately] -> [start {y} second respawn countdown]
+[{y} second countdown ends] -> [tagged players become untagged] -> [assign colors from backend appropriately]
+[one person left]           -> [win]
+
+
+------------------------------------------
+3. logging out
+
+[no players in lobby for 300 seconds] -> [session stops]
+
+

@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>
+            {{ lobby.id }}|{{ player.id }}
+        </title>
+    </head>
+    <body>
+        <script src="{{url_for('static', filename='lobby.js')}}"></script>
+        <script src="//cdnjs.cloudflare.com/ajax/libs/socket.io/2.2.0/socket.io.js"></script>
+        <div id="player-id" hidden>{{ player.id }}</div> <!--get current player id so we know what to send to the server-->
+        <div id="lobby-id" hidden>{{ lobby.id }}</div> <!--get current lobby id so we know what to send to the server-->
+        <div>
+            <h1>
+                join lobby with id : {{ lobby.id }} <br>
+                you are player with id : {{player.id}}
+            </h1>
+        </div>
+        <div id = "players">
+            
+        </div>
+    </body>
+</html>
