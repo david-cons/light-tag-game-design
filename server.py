@@ -74,10 +74,8 @@ def lobby(lobby, player): #this has lobby id
         lobby = Lobby.all_lobbies[lobby]
 
         if len(lobby.players) == 1:
-            thread = Thread(target=lobby.game, args=(socketio,10,20,None))
-            thread.start()
+            socketio.start_background_task(target=lobby.game, args=(socketio,10,20,None))
             
-
         player = lobby.get_player_by_id(player)
 
         return render_template('lobby.html', lobby=lobby, player=player)
@@ -118,9 +116,27 @@ def on_timeout(data):
     print(everyone)
     emit('update_lobby', {'players' : everyone }, to=lobby.id) 
 
+
+@socketio.on('leave')
+def on_leave(data):
+    print('player: ' + data['player_id'] + ' from lobby: ' + data['lobby'] + ' has left')
+    
+    lobby = Lobby.all_lobbies[data['lobby']]
+
+    lobby.remove_player(lobby.get_player_by_id(data['player_id']))
+    leave_room(data['lobby']) # we already know this has to exist
+
+    everyone = {}
+
+    for i in lobby.players:
+        everyone[i.id] = i.color
+
+    print(everyone)
+    emit('update_lobby', {'players' : everyone} , to=lobby.id)
+
 @socketio.on('disconnect')
 def on_disconnect():
-    pass # need to add code for leaving the room also
+    print('player has left')
 
 
 if __name__ == "__main__":

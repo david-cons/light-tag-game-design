@@ -28,8 +28,12 @@ window.onload = function() {
 
     document.addEventListener('click', function(){
         console.log(my_player_id + ' is time-outed');
-        socket.emit('time-out', {'player_id' : my_player_id, 'lobby' : my_lobby_id });
+        socket.emit('time-out', {'lobby' : my_lobby_id, 'player_id' : my_player_id, });
     });
+}
+
+window.onbeforeunload = function () {
+    socket.emit('leave', {'lobby' : my_lobby_id , 'player_id' : my_player_id} );
 }
 
 function join()
