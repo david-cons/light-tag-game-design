@@ -65,6 +65,7 @@ class Lobby:
                 return # end thread when there are no more players in the game
         
             if lap == 1 or game_mode == 'dynamic':
+                print("switching players colors in lobby: " + str(self.id) + " at lap: " + str(lap))
                 self.switch_players_colors()
 
             self.send_current_lobby_state(socketio=socketio)
@@ -83,9 +84,9 @@ class Lobby:
 
         for (k,i) in enumerate(shuffled_list):
             if k % 3 == 0:
-                i.color = tagger
+                self.get_player_by_id(i.id).color = tagger
             else:
-                i.color = runner
+                self.get_player_by_id(i.id).color = runner
 
         
     def send_current_lobby_state(self,socketio):
