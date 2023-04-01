@@ -77,7 +77,7 @@ class Lobby:
         # we want about 66% of players to be runners
         # we want to make sure there is at least 1 tagger always
 
-        shuffled_list = random.sample(self.players, len(self.players))
+        shuffled_list = sample(self.players, len(self.players))
         tagger = 'red'
         runner = 'blue'
 
