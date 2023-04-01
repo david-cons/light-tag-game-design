@@ -1,4 +1,4 @@
-from random import randint
+from random import randint, sample
 import threading
 import time
 import gevent
@@ -51,27 +51,43 @@ class Lobby:
     def remove_player(self, player):
         self.players.remove(player)
 
-    def game(self, socketio, start_game_wait_time, time_out_time,game_mode = None): #timing is done in seconds
+    def game(self, socketio, start_game_wait_time, time_out_time, game_mode = None): #timing is done in seconds
         print(str(self.id) + ' game is running')
         gevent.sleep(start_game_wait_time) # start of the game time until everybody is ready
         #print the amount of time people have to get ready for 
-
+        lap = 0
         while True: #game_loop
+            lap += 1
             #print everybody's colors 
 
             if len(self.players) == 0:
                 print(str(self.id) + ' game is closed')
                 return # end thread when there are no more players in the game
         
-            for i in self.players:
-                i.color = 'blue' if randint(0,1) == 1 else 'red'
+            if lap == 1 or game_mode == 'dynamic':
+                self.switch_players_colors()
 
             self.send_current_lobby_state(socketio=socketio)
 
             gevent.sleep(time_out_time)
 
             
+    def switch_players_colors(self):
+        # we want about 33% of players to be taggers
+        # we want about 66% of players to be runners
+        # we want to make sure there is at least 1 tagger always
 
+        shuffled_list = random.sample(self.players, len(self.players))
+        tagger = 'red'
+        runner = 'blue'
+
+        for (k,i) in enumerate(shuffled_list):
+            if k % 3 == 0:
+                i.color = tagger
+            else:
+                i.color = runner
+
+        
     def send_current_lobby_state(self,socketio):
            everybody = {}
 

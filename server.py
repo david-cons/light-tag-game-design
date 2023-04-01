@@ -77,7 +77,7 @@ def lobby(lobby, player): #this has lobby id
 
         if len(lobby.players) == 1:
             with Lock():
-                running_games.append(socketio.start_background_task(lobby.game, socketio,10,20,None))
+                running_games.append(socketio.start_background_task(lobby.game, socketio,10,20,'dynamic'))
 
         player = lobby.get_player_by_id(player)
 
@@ -133,3 +133,5 @@ def on_disconnect():
 
 if __name__ == "__main__":
     socketio.run(app)
+
+
