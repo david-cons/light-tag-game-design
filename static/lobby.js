@@ -10,6 +10,7 @@ window.onload = function() {
     socket = io.connect('http://' + document.domain + ':' + location.port);
     join();
 
+    emit_alarm_sound();
     socket.on('update_lobby', function(data) {
         console.log(data['players']);
         display_players(data['players']);
@@ -72,4 +73,9 @@ function display_players(players)
 function change_background_color(color)
 {
     document.body.style.backgroundColor = color === null ? 'yellow' : color;
+}
+
+function emit_alarm_sound()
+{
+    new Audio('https://soundboardguy.com/wp-content/uploads/2021/07/oh-my-god-meme.mp3').play();
 }
