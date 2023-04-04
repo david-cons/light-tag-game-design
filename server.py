@@ -125,7 +125,7 @@ def on_lobby_state(data):
         everyone[i.id] = i.color
 
     print(everyone)
-    emit('update_lobby', {'players' : everyone} , to=lobby.id)
+    emit('update_lobby', {'players' : everyone, 'lap' : lobby.lap} , to=lobby.id) #this is not changing laps it is just giving the new player state
 
 @socketio.on('disconnect')
 def on_disconnect():

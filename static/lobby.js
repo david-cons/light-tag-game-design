@@ -1,7 +1,7 @@
 let socket = null;
 let my_player_id = null;
 let my_lobby_id = null;
-
+let lap = null;
 
 window.onload = function() {
     my_player_id = document.getElementById('player-id').innerHTML;
@@ -10,7 +10,6 @@ window.onload = function() {
     socket = io.connect('http://' + document.domain + ':' + location.port);
     join();
 
-    emit_alarm_sound();
     socket.on('update_lobby', function(data) {
         console.log(data['players']);
         display_players(data['players']);
@@ -22,6 +21,13 @@ window.onload = function() {
             {
                 my_color = color;
             }
+        }
+
+        if(data['lap'] !== lap) // we do not want this to play in the beginnign
+        {
+            emit_alarm_sound();
+            lap = data['lap'];
+            document.getElementById('lap').innerHTML = 'lap : ' + lap;
         }
 
         change_background_color(my_color);
@@ -77,5 +83,5 @@ function change_background_color(color)
 
 function emit_alarm_sound()
 {
-    new Audio('https://soundboardguy.com/wp-content/uploads/2021/07/oh-my-god-meme.mp3').play();
+    new Audio("https://www.freesoundslibrary.com/wp-content/uploads/2018/01/ding-sound-effect.mp3").play();
 }

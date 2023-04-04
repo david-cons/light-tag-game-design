@@ -15,6 +15,7 @@ class Lobby:
             trial = str(randint(0,1000))
 
         self.id = trial
+        self.lap = None
 
         if players == None:
             self.players = []
@@ -55,17 +56,17 @@ class Lobby:
         print(str(self.id) + ' game is running')
         gevent.sleep(start_game_wait_time) # start of the game time until everybody is ready
         #print the amount of time people have to get ready for 
-        lap = 0
+        self.lap = 0
         while True: #game_loop
-            lap += 1
+            self.lap += 1
             #print everybody's colors 
 
             if len(self.players) == 0:
                 print(str(self.id) + ' game is closed')
                 return # end thread when there are no more players in the game
         
-            if lap == 1 or game_mode == 'dynamic':
-                print("switching players colors in lobby: " + str(self.id) + " at lap: " + str(lap))
+            if self.lap == 1 or game_mode == 'dynamic':
+                print("switching players colors in lobby: " + str(self.id) + " at lap: " + str(self.lap))
                 self.switch_players_colors()
 
             self.send_current_lobby_state(socketio=socketio)
@@ -95,7 +96,7 @@ class Lobby:
            for i in self.players:
                everybody[i.id] = i.color
 
-           socketio.emit('update_lobby', {'players' : everybody}, to=self.id)
+           socketio.emit('update_lobby', {'players' : everybody, 'lap' : self.lap}, to=self.id)
 
 
 
